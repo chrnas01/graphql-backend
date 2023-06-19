@@ -6,9 +6,12 @@ const {
     GraphQLString, 
     GraphQLInt 
 } = require("graphql");
-const Tutor = require("../models/Tutor.js")
-const Student = require("../models/Student.js")
-const Course = require("../models/Course.js")
+const {
+    Course,
+    Class,
+    Student,
+    Tutor
+} = require("../models");
 
 const TutorType = new GraphQLObjectType({
     name: "TutorType",
@@ -37,6 +40,25 @@ const CourseType = new GraphQLObjectType({
         id: { type: GraphQLID }, 
         code: { type: GraphQLString },
         name: { type: GraphQLString }
+    }
+})
+
+const ClassType = new GraphQLObjectType({
+    name: "ClassType",
+    fields: {
+        id: { type: GraphQLID },
+        course: { 
+            type: CourseType,
+            resolve: (parent, args) => Course.findById(parent.course_id) 
+        },
+        tutor: { 
+            type: TutorType,
+            resolve: (parent, args) => Tutor.findById(parent.tutor_id) 
+        },
+        student: { 
+            type: StudentType,
+            resolve: (parent, args) => Student.findById(parent.student_id)
+        }
     }
 })
 
@@ -76,6 +98,10 @@ const RootQuery = new GraphQLObjectType({
             },
             resolve: (parent, args) => Course.findById(args.id)
         },
+        classes: {
+            type: new GraphQLList(ClassType),
+            resolve: (parent, args) => Class.findAll()
+        }
     }
 })
 
