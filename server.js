@@ -1,4 +1,3 @@
-const dotenv = require('dotenv')
 const express = require('express')
 const expressGraphQL = require('express-graphql').graphqlHTTP
 const {
@@ -6,7 +5,7 @@ const {
     GraphQLSchema,
     GraphQLString
 } = require('graphql')
-dotenv.config()
+require('dotenv').config()
 
 const app = express()
 const PORT = process.env.PORT || 3000
