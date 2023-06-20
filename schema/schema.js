@@ -15,37 +15,45 @@ const {
 
 const TutorType = new GraphQLObjectType({
     name: "TutorType",
-    fields: {
+    fields: () => ({
         id: { type: GraphQLID }, 
         name: { type: GraphQLString },
         email: { type: GraphQLString },
         phone: { type: GraphQLString },
-        rating: { type: GraphQLInt }
-    }
+        rating: { type: GraphQLInt },
+        classes: {
+            type: GraphQLList(CourseType),
+            resolve: (parent, args) => Tutor.findClasses(parent.id)
+        }
+    })
 })
 
 const StudentType = new GraphQLObjectType({
     name: "StudentType",
-    fields: {
+    fields: () => ({
         id: { type: GraphQLID }, 
         name: { type: GraphQLString },
         email: { type: GraphQLString },
-        phone: { type: GraphQLString }
-    }
+        phone: { type: GraphQLString },
+        tutors: {
+            type: GraphQLList(TutorType),
+            resolve: (parent, args) => Student.findTutors(parent.id)
+        }
+    })
 })
 
 const CourseType = new GraphQLObjectType({
     name: "CourseType",
-    fields: {
+    fields: () => ({
         id: { type: GraphQLID }, 
         code: { type: GraphQLString },
         name: { type: GraphQLString }
-    }
+    })
 })
 
 const ClassType = new GraphQLObjectType({
     name: "ClassType",
-    fields: {
+    fields: () => ({
         id: { type: GraphQLID },
         course: { 
             type: CourseType,
@@ -59,7 +67,7 @@ const ClassType = new GraphQLObjectType({
             type: StudentType,
             resolve: (parent, args) => Student.findById(parent.student_id)
         }
-    }
+    })
 })
 
 const RootQuery = new GraphQLObjectType({
