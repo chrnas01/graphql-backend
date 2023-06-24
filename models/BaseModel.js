@@ -14,6 +14,14 @@ class BaseModel {
         const res = await pool.query(`SELECT * FROM ${this.getTableName()} WHERE id=?;`, [id]);
         return res[0][0]
     }
+
+    static async findLatestEntry() {
+        const res = await pool.query(`
+            SELECT * FROM ${this.getTableName()}
+            ORDER BY id DESC 
+            LIMIT 1;`);
+        return res[0][0]
+    }
 }
 
 module.exports = BaseModel;

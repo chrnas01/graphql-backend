@@ -4,7 +4,8 @@ const {
     GraphQLList, 
     GraphQLID, 
     GraphQLString, 
-    GraphQLInt 
+    GraphQLInt, 
+    GraphQLNonNull
 } = require("graphql");
 const {
     Course,
@@ -113,6 +114,27 @@ const RootQuery = new GraphQLObjectType({
     }
 })
 
+const mutation = new GraphQLObjectType({
+    name: "Mutation",
+    fields: () => ({
+        addTutor: {
+            type: TutorType,
+            args: {
+                name: { type: GraphQLNonNull(GraphQLString)},
+                email: { type: GraphQLNonNull(GraphQLString)},
+                phone: { type: GraphQLString },
+                rating: { type: GraphQLInt }
+            },
+            resolve: async (parent, args) => {
+                const tutor = new Tutor(args.name, args.email, args.phone, args.rating)
+                const newTutor = await tutor.save();
+                return newTutor;
+            }
+        }
+    })
+})
+
 module.exports = new GraphQLSchema({
-    query: RootQuery
+    query: RootQuery,
+    mutation
 });

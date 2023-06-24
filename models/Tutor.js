@@ -7,10 +7,26 @@ class Tutor extends BaseModel {
     }
 
     constructor(name, email, phone, rating) {
+        super();
         this.name = name;
         this.email = email;
         this.phone = phone;
         this.rating = rating;
+    }
+
+    async save() {
+        try {
+            const res = await pool.query(`
+            INSERT INTO tutors(name, email, phone, rating) 
+            VALUES (?, ?, ?, ${this.rating || "DEFAULT" });
+            `, [this.name, this.email, this.phone, this.rating]);
+        
+            return Tutor.findLatestEntry();
+        }
+        catch(e) {
+            console.log(e);
+            throw new Error(e);
+        }
     }
 
     static async findClasses(id) {
